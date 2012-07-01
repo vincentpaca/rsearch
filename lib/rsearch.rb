@@ -1,5 +1,6 @@
 require "rsearch/version"
+require "rsearch/google"
 
-module Rsearch
+module RSearch
   # Your code goes here...
 end
