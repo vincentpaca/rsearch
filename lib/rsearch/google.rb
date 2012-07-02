@@ -11,11 +11,10 @@ module RSearch
 
     def search(query, options={})
       search = Search.new(@key, @cx, query, options)
-      search.do!
+      search.do
     end
 
     class Search
-      
       def initialize(key, cx, q, options={})
         @url = "https://www.googleapis.com/customsearch/v1?key=#{key}&cx=#{cx}&q=#{q.gsub(" ", "+")}"
 
@@ -24,13 +23,22 @@ module RSearch
         end
       end
 
-      def do!
+      def do
         response = open(@url).read
-        JSON.parse(response)
+        Response.new(JSON.parse(response))
       end
+    end
 
+    class Response
+      @@attributes = [:kind, :url, :queries, :context, :items]
+      @@attributes.each { |a| attr_accessor a }
+      
+      def initialize(json_response)
+        @@attributes.each do |a|
+          instance_variable_set "@#{a}", json_response[a.to_s]
+        end
+      end
     end
 
   end
-
 end
