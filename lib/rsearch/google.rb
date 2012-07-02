@@ -28,7 +28,8 @@ module RSearch
         Response.new(JSON.parse(response))
       end
     end
-
+    
+    #endof Search
     class Response
       @@attributes = [:kind, :url, :queries, :context, :items]
       @@attributes.each { |a| attr_accessor a }
@@ -36,9 +37,24 @@ module RSearch
       def initialize(json_response)
         @@attributes.each do |a|
           instance_variable_set "@#{a}", json_response[a.to_s]
+          URL.new(@url)
         end
       end
-    end
 
+      class URL
+	@@attributes = [:type, :template]
+        @@attributes.each { |a| attr_accessor a }
+        
+        def initialize(json_url)
+          @@attributes.each do |a|
+            instance_variable_set "@#{a}", json_url[a.to_s]
+          end
+        end
+      end
+      #endof URL
+
+    end
+    #endof Response
   end
+  #endof Google
 end
