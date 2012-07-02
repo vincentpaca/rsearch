@@ -9,6 +9,7 @@ describe RSearch do
     search.queries.should_not be_nil
     search.context.should_not be_nil
     search.items.should_not be_nil
+    search.url.type.should_not be_nil
   end
  
 end
