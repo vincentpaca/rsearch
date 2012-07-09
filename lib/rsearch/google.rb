@@ -31,27 +31,64 @@ module RSearch
     
     #endof Search
     class Response
-      @@attributes = [:kind, :url, :queries, :context, :items]
+      @@attributes = [:url, :queries, :context, :items]
       @@attributes.each { |a| attr_accessor a }
-      
+
       def initialize(json_response)
         @@attributes.each do |a|
-          instance_variable_set "@#{a}", json_response[a.to_s]
-          URL.new(@url)
-        end
-      end
+          
+          response = json_response[a.to_s]
+          classified_attr = a.to_s.capitalize
 
-      class URL
-	@@attributes = [:type, :template]
-        @@attributes.each { |a| attr_accessor a }
-        
-        def initialize(json_url)
-          @@attributes.each do |a|
-            instance_variable_set "@#{a}", json_url[a.to_s]
+          if response.class.to_s == "Hash"
+            instance_variable_set "@#{a}", Response.const_get(classified_attr).new(response)
+          else
+            item_arr = []
+            response.each { |r| item_arr << Response.const_get(classified_attr).new(r) }
+            instance_variable_set "@#{a}", item_arr
           end
         end
       end
-      #endof URL
+
+      class Url
+        @@url_attributes = [:type, :template]
+        @@url_attributes.each { |a| attr_accessor a }
+        
+        def initialize(json_url)
+          @@url_attributes.each { |a| instance_variable_set "@#{a}", json_url[a.to_s] }
+        end
+      end
+      #endof Url
+      
+      class Queries
+        @@queries_attributes = [:nextPage, :request]
+        @@queries_attributes.each { |a| attr_accessor a }
+
+        def initialize(json_url)
+          @@queries_attributes.each { |a| instance_variable_set "@#{a}", json_url[a.to_s] }
+        end
+      end
+      #endof Queries
+
+      class Context
+        @@context_attributes = [:title]
+        @@context_attributes.each { |a| attr_accessor a }
+
+        def initialize(json_url)
+          @@context_attributes.each { |a| instance_variable_set "@#{a}", json_url[a.to_s] }
+        end
+      end
+      #endof Context
+
+      class Items
+        @@items_attributes = [:kind, :title, :htmlTitle, :link, :displayLink, :snippet, :htmlSnippet]
+        @@items_attributes.each { |a| attr_accessor a }
+
+        def initialize(json_url)
+          @@items_attributes.each { |a| instance_variable_set "@#{a}", json_url }
+        end
+      end
+      #endof Items
 
     end
     #endof Response
