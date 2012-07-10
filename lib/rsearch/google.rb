@@ -50,45 +50,30 @@ module RSearch
         end
       end
 
-      class Url
-        @@url_attributes = [:type, :template]
-        @@url_attributes.each { |a| attr_accessor a }
-        
-        def initialize(json_url)
-          @@url_attributes.each { |a| instance_variable_set "@#{a}", json_url[a.to_s] }
+      @@attributes.each do |a|
+        class_name = a.to_s.capitalize
+        klass = Object.const_set(class_name, Class.new)
+
+        case class_name
+        when "Url"
+          instance_vars = ['type', 'template']
+        when "Queries"
+          instance_vars = ['nextPage', 'request']
+        when "Context"
+          instance_vars = ['title']
+        when "Items"
+          instance_vars = ['kind', 'title', 'htmlTitle', 'link', 'displayLink', 'snippet', 'htmlSnippet']
         end
-      end
-      #endof Url
-      
-      class Queries
-        @@queries_attributes = [:nextPage, :request]
-        @@queries_attributes.each { |a| attr_accessor a }
 
-        def initialize(json_url)
-          @@queries_attributes.each { |a| instance_variable_set "@#{a}", json_url[a.to_s] }
+        klass.class_eval do
+          attr_accessor *instance_vars
+
+          define_method(:initialize) do |json_url|
+            instance_vars.each { |n| instance_variable_set "@#{n}", json_url[n.to_s] }
+          end
         end
+
       end
-      #endof Queries
-
-      class Context
-        @@context_attributes = [:title]
-        @@context_attributes.each { |a| attr_accessor a }
-
-        def initialize(json_url)
-          @@context_attributes.each { |a| instance_variable_set "@#{a}", json_url[a.to_s] }
-        end
-      end
-      #endof Context
-
-      class Items
-        @@items_attributes = [:kind, :title, :htmlTitle, :link, :displayLink, :snippet, :htmlSnippet]
-        @@items_attributes.each { |a| attr_accessor a }
-
-        def initialize(json_url)
-          @@items_attributes.each { |a| instance_variable_set "@#{a}", json_url }
-        end
-      end
-      #endof Items
 
     end
     #endof Response
